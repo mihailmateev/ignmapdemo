@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SpatialDemoModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="SpatialDemoModelStoreContainer">
+          <EntitySet Name="world" EntityType="SpatialDemoModel.Store.world" store:Type="Tables" Schema="dbo" />
+        </EntityContainer>
+        <EntityType Name="world">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CODE" Type="nvarchar" MaxLength="255" />
+          <Property Name="CNTRY_NAME" Type="nvarchar" MaxLength="255" />
+          <Property Name="POP_CNTRY" Type="bigint" />
+          <Property Name="CURR_TYPE" Type="nvarchar" MaxLength="255" />
+          <Property Name="CURR_CODE" Type="nvarchar" MaxLength="255" />
+          <Property Name="FIPS" Type="nvarchar" MaxLength="255" />
+          <Property Name="geom" Type="geometry" />
+        </EntityType>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SpatialDemoModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="SpatialDemoEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="worlds" EntityType="SpatialDemoModel.world" />
+        </EntityContainer>
+        <EntityType Name="world">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="CODE" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="CNTRY_NAME" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="POP_CNTRY" Type="Int64" />
+          <Property Name="CURR_TYPE" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="CURR_CODE" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="FIPS" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+          <Property Name="geom" Type="Geometry" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SpatialDemoModelStoreContainer" CdmEntityContainer="SpatialDemoEntities">
+          <EntitySetMapping Name="worlds">
+            <EntityTypeMapping TypeName="SpatialDemoModel.world">
+              <MappingFragment StoreEntitySet="world">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="CODE" ColumnName="CODE" />
+                <ScalarProperty Name="CNTRY_NAME" ColumnName="CNTRY_NAME" />
+                <ScalarProperty Name="POP_CNTRY" ColumnName="POP_CNTRY" />
+                <ScalarProperty Name="CURR_TYPE" ColumnName="CURR_TYPE" />
+                <ScalarProperty Name="CURR_CODE" ColumnName="CURR_CODE" />
+                <ScalarProperty Name="FIPS" ColumnName="FIPS" />
+                <ScalarProperty Name="geom" ColumnName="geom" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

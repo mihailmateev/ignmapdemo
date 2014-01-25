@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "Spatial Data & Entity Framework";
+}
+
+<h2>@ViewBag.Message</h2>
+
+<script src="http://cdn-na.infragistics.com/jquery/20122/latest/js/infragistics.loader.js">
+</script>
+
+<script type="text/javascript">
+    jQuery.support.cors = true;
+    $.ig.loader({
+        scriptPath: "/Scripts/Infragistics/js/", 
+        cssPath: "/Content/Infragistics/css/",
+        resources: "igGrid.Selection.Paging.Sorting,igMap,igDataChart.*",
+        theme: "metro"
+        });
+        $.ig.loader(function () {
+            var data = [];
+            var selected;
+
+            var rowIndex;
+            
+            var selectedColor;
+
+            //Cerate a color picker
+            $('#color1').colorPicker();
+
+            selectedColor = $('#color1')[0].value;
+
+            $('#color1').change(function () {
+                selectedColor = $('#color1')[0].value;
+
+                var rowIndex = $('#grid').igGridSelection("selectedRow").index;
+
+                var currRow = $('#grid').igGridSelection("selectedRow");
+
+                //$("#map").igMap("destroy");
+
+                //$("#map").igMap({
+                //    width: "500px",
+                //    height: "500px",
+                //    panModifier: "control",
+                //    horizontalZoomable: true,
+                //    verticalZoomable: true,
+                //    windowResponse: "immediate",
+                //    overviewPlusDetailPaneVisibility: "visible",
+                //    seriesMouseLeftButtonUp: function (ui, args) {
+                //        var tets = args;
+                //    }
+                //});
+
+                $("#map").igMap("option", "series", [{ name: "series1", remove: true }]);
+
+                $("#map").igMap("option", "series", [{ name: "Countries", remove: true }]);
+
+                if (rowIndex != null) {
+                    $('#grid').igGridSelection("selectRow", rowIndex);
+
+                    $('#grid').data("igGridSelection").options.rowSelectionChanged(null, { row: currRow});
+                }
+
+
+
+            });
+
+
+            $("#map").igMap({
+                width: "100%",
+                panModifier: "control",
+                horizontalZoomable: true,
+                verticalZoomable: true,
+                windowResponse: "immediate",
+                overviewPlusDetailPaneVisibility: "visible",
+                windowRect: 
+                  {
+                      left: 0,
+                      top: 0,
+                      width: 0.5,
+                      height: 0.5
+                  },
+                seriesMouseLeftButtonUp: function (ui, args) {
+                    var tets = args;
+                }
+            });
+
+            $("#chart").igDataChart({
+                width: "100%",
+                height: "220px",
+                dataSource: "/Home/Orders",
+                axes: [{ name: "xAxis", type: "categoryX", label: "OrderID", labelVisibility: "visible" },
+                        { name: "yAxis", type: "numericY", labelVisibility: "visible"}],
+                series: [
+                    { name: "series",
+                        title: "Order Freight Series",
+                        type: "line",
+                        xAxis: "xAxis",
+                        yAxis: "yAxis",
+                        valueMemberPath: "Freight", trendLineThickness: 6, thickness: 4,
+                        trendLineBrush: "cyan",
+                        transitionDuration: 1500,
+                        trendLineType: "exponentialAverage"
+                    }],
+                horizontalZoomable: true,
+                verticalZoomable: true,
+                windowResponse: "immediate",
+                overviewPlusDetailPaneVisibility: "visible"
+            });
+
+            $('#grid').igGrid({
+                virtualization: false, height: 280, width: "100%",
+                dataSource: "/Home/Customers",
+                autoGenerateColumns: false,
+                columns: [
+                    { headerText: "Customer ID", key: "CustomerID", width: "120px", dataType: "string" },
+                    { headerText: "Country", key: "Country", width: "150px", dataType: "string" },
+                    { headerText: "City", key: "City", dataType: "string" },
+                    { headerText: "Contact", key: "ContactName", dataType: "string" },
+                    {headerText: "Phone", key: "Phone", dataType: "string" }
+                ],
+                features: [
+
+                 {
+                     name: 'Selection',
+                     mode: 'row',
+                     multipleSelection: false,
+                     rowSelectionChanged: function (ui, args) {
+                         $("#chart").igDataChart({
+                             dataSource: "/Home/Orders?userID=" + args.row.element[0].cells[0].textContent
+                         });
+
+                         selected = args.row.element[0].cells[0].textContent; //keep track of selected user
+                         var countryUrl = "/Home/CountryByName?countryName=" + args.row.element[0].cells[1].textContent;
+
+                        $.getJSON(countryUrl,
+                           function (json, text) {
+                               $.each(json, function (index, value) {
+                                   var country = value;
+                                   var extend = country["Extend"];                                   
+
+                                   var shapeData = country["ShapeData"];
+
+                                   selectedColor = $('#color1')[0].value;
+
+                                   var zoom = $("#map").igMap("getZoomFromGeographic", extend);
+                                   $("#map").igMap("option", "windowRect", zoom);
+                                  
+                                   $("#map").igMap("option", "series", [{
+                                       name: "series1",
+                                       type: "geographicShape",
+                                       markerType: "none",
+                                       dataSource: shapeData,
+                                       shapeMemberPath: "Points",
+                                       shapeStyle: {
+                                           fill: selectedColor,
+                                           stroke: "black",
+                                           thickness: 8.0
+                                       }
+
+                                   }]
+                                 );
+
+                                   //MM1
+                                   var center = country["Center"];
+                                   var name, lat, lon, centerData;
+
+                                   name = country["CountryName"];
+
+                                   lat = parseFloat(center.y);
+                                   lon = parseFloat(center.x);
+
+                                   centerData = [{ Name: name, Latitude: lat, Longitude: lon }];
+
+                                   $("#map").igMap("option", "series", [{
+                                       name: "Countries", 
+                                       type: "geographicSymbol",
+                                       longitudeMemberPath: "Longitude",
+                                       latitudeMemberPath: "Latitude",
+
+                                       /*
+                                      The provided object should have properties called render and optionally measure.
+                                      These are functions which will be called that will be called to handle the user specified custom rendering.
+                                      */
+                                       markerTemplate: {
+                                           render: function (renderInfo) {
+                                               var ctx = renderInfo.context; //2d canvas context
+                                               var x = renderInfo.xPosition;
+                                               var y = renderInfo.yPosition;
+
+                                               if (renderInfo.isHitTestRender) {
+                                                   //  This is called for tooltip hit test only
+                                                   //  Rough marker rectangle size calculation
+                                                   ctx.fillStyle = "yellow";
+                                                   ctx.fillRect(x, y, renderInfo.availableWidth, renderInfo.availableHeight);
+                                               } else {
+                                                   //actual marker drawing is here:
+                                                   var markerData = renderInfo.data;
+                                                   var name = markerData.item()["Name"];
+                                                   //set font or measure will be for the default one
+                                                   ctx.font = '10pt Segoe UI';
+                                                   var textWidth = ctx.measureText(name).width;
+
+                                                   //Move the path point to the desired coordinates:
+                                                   ctx.moveTo(x, y);
+                                                   //Draw lines:
+                                                   ctx.beginPath();
+                                                   ctx.lineTo(x - (textWidth / 2) - 5, y + 5);
+                                                   ctx.lineTo(x - (textWidth / 2) - 5, y + 40); // 35width rect.
+                                                   ctx.lineTo(x + (textWidth / 2) + 5, y + 40); // full textWidth line plus 5 margin
+                                                   ctx.lineTo(x + (textWidth / 2) + 5, y + 5); // 35 up
+                                                   ctx.lineTo(x, y);
+                                                   //finish the shape
+                                                   ctx.closePath();
+                                                   ctx.fillStyle = "rgba(78,183,226,0.7)";
+                                                   ctx.fill();
+                                                   ctx.lineWidth = 0.5;
+                                                   ctx.strokeStyle = "#185170";
+                                                   ctx.stroke();
+                                                   //add a point at the start
+                                                   ctx.beginPath();
+                                                   ctx.fillStyle = "black";
+                                                   ctx.arc(x, y, 1.5, 0, 2 * Math.PI, true);
+                                                   ctx.fill();
+
+                                                   //  Draw text
+                                                   ctx.textBaseline = "top";
+                                                   ctx.fillStyle = "black";
+                                                   ctx.textAlign = 'center';
+                                                   ctx.fillText(selected, x, y + 8);
+                                                   ctx.fillText(name, x, y + 20);
+                                               }
+                                           }
+                                       },
+
+                                       dataSource: centerData
+                                   }]
+                                ); //MM2
+
+                               });
+                         });
+
+                     }
+                 }
+                ,
+
+                {
+                    name: 'Sorting',
+                    type: "remote"
+                },
+                {
+                    name: 'Paging',
+                    type: "local",
+                    pageSize: 10,
+                    //pageSizeDropDownLocation: "inpager",
+                    pageCountLimit : 1
+                }]
+                ,
+                rendered: function (ui, args) {
+                    //set up on-load selection 
+                    $('#grid').igGridSelection("selectRow", 0);
+                    //another way to get cell value independant of event parameters
+                    var id = $('#grid').igGrid("getCellValue", 0, "CustomerID");
+                    $("#chart").igDataChart({
+                        dataSource: "/Home/Orders?userID=" + id
+                    });
+
+
+                }
+            });
+        });
+   </script>
+
+@*width: 1155px;*@
+<div style="display: block; height: 500px;">
+    <div><label for="color1">Highlight Color:</label><input id="color1" name="color1" type="text" value="#333399" style="width:200px; height:40px" /></div>
+    <div style="float: left; width:60%;  height: 500px; margin-right: 1%;">
+        <table id="grid">
+        </table>
+        <div id="chart"></div>
+    </div>
+@*    <div id="mapRoot" style="float: right; top: -500px; height: 500px; width: 500px;">
+        <div id="map" />
+    </div>*@
+@*   <div id="chartRoot" style="position: relative; width: 550px; height: 260px; top: -220px; left: -650px; margin-right: 5px;">
+        <div id="chart" />
+    </div>*@
+    <div id="mapRoot" style="float: right; top: -500px; height: 500px; width: 39%;">
+        <div id="map" ></div>
+    </div>
+</div>
+

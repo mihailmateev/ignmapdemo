@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="IgniteUIMapCloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="3" osVersion="*" schemaVersion="2012-10.1.8">
+  <Role name="Mvc4EfMapShape">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="mmateev" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCECgvFzkWBViiTjSCGE7XH0EwDQYJKoZIhvcNAQEBBQAEggEARB8T7yVNs28Npr3rbmXrby6+itbd72VOJjJw9gwEoLc5anzAb12pEH4C0VdYxZP+rOIG4h5iHqbmoh2Ufw3EmeDJ0Wql/dDNBhXZ+hJ8JegOfpI1XESYSWdP96jdGuR1yWCf7BQ80pFsaSpZ9YDe9ZqPZINfobQS+w6Cz0nwLrMmXdeCtlzITojtC+MQ7gxB9MvNGmtc+3UF3RGFDnQKINHHDLddjAjs64ZScjD5ONBi4w+IO5mfDS3SjIZUmXpmNBUb642V18yWIExrRTtlDY+WRH/cYuAPs6BQhJ12/DH8ZEdF3xqFP8vyGIDmxlnwL+hl0R3LMz04I7BH7lXNdjAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECAeYGRjCfADngBBMpQbJXYAY403vJuKQzltI" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2013-10-31T23:59:59.0000000+02:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="DF2492950779257D18F9B0F58F1C1D5B3AD2F600" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>
